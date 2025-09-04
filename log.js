@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     if (!message) return res.status(400).json({ error: "No message" });
 
     const token = "8099430341:AAEzfX7LCh5xFbNHAo1CeGA-L1fEEFTDVPA"; // сюда твой токен бота
-    const chat_id = "1946463409";  // сюда ID чата
+    const chat_id = "-1002729269078";  // сюда ID чата
 
     try {
       await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -24,3 +24,4 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 }
+
