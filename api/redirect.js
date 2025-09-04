@@ -1,5 +1,5 @@
 export default function handler(req, res) {
-  const redirectUrl = process.env.REDIRECT_URL || "https://optimabank.deliversite-e.buzz/643306";
-  res.writeHead(302, { Location: redirectUrl });
+  const url = process.env.REDIRECT_URL || "https://example.com"; // запасной вариант
+  res.writeHead(302, { Location: url });
   res.end();
 }
